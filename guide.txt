@@ -1,0 +1,4 @@
+CELESTIAL MAPS
+    - Mapa v preview neinteraktivní
+    - preview plakát s borderem žádne rámečky
+    - 

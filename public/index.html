@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- App font -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200&display=swap" rel="stylesheet">
+
+    <!-- Vendor styles -->
+    <link rel="stylesheet" href="css/tailwind.css">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v3.0.6/css/line.css">
+    <link rel="stylesheet" type="text/css" href="d3-celestial-master/celestial.css">
+
+    <!-- App styles -->
+    <link rel="stylesheet" href="./css/preview.css">
+
+    <!-- Google maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCav9HR17Fp5BdgWteGTsL9fzabqQvFlM4&libraries=places" async defer></script>
+
+    <!-- TinyMCE wysivyg library -->
+    <script src="https://cdn.tiny.cloud/1/bx6o3snfcy4nnc36yij99wzp009dvd8h2uq8ioz3brpmy4hm/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <!-- Vendor scripts -->
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v1.8.0/dist/alpine.js"></script>
+    <script src="d3-celestial-master/lib/d3.min.js"></script>
+    <script src="d3-celestial-master/lib/d3.geo.projection.min.js"></script>
+    <script src="d3-celestial-master/celestial.min.js"></script>
+
+    <!-- PDF stuff -->
+    <script src="./vendor/jspdf.umd.min.js"></script>
+    <script src="./vendor/FileSaver.min.js"></script>
+    <script src="./vendor/jszip.min.js"></script>
+
+    <!-- App config scripts -->
+    <script src="./js/app.js"></script>
+    <!-- <script src="./js/data/GalaScales.js"></script>
+    <script src="./js/data/GalaThemes.js"></script>
+    <script src="./js/data/TextScales.js"></script>
+    <script src="./js/CelestialHandler.js"></script>
+    <script src="./js/TextHandler.js"></script>
+    <script src="./js/PreviewHandler.js"></script>
+    <script src="./js/Exporter.js"></script>
+    <script src="./js/index.js"></script> -->
+
+
+    <title>Galamaps generator</title>
+
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header>
+        <nav id="mainNav" class="bg-gray-800">
+            <div class="max-w-full mx-auto px-2 sm:px-6 lg:px-8">
+                <div class="relative flex items-center justify-between h-16">
+                    <div id="mobileMenu" class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+                        <!-- Mobile menu button-->
+                        <button
+                            class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                            aria-expanded="false">
+                            <span class="sr-only">Open main menu</span>
+                            <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                            <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+                        <div class="flex-shrink-0 flex items-center">
+                            <!-- <img class="block lg:hidden h-8 w-auto"
+                                src="/public/img/pictogram_galamaps_final_white.svg" alt="Workflow">
+                            <img class="hidden lg:block h-8 w-auto"
+                                src="/public/img/galamaps-white-fin.png"
+                                alt="Workflow"> -->
+                        </div>
+                        <div class="hidden sm:block sm:ml-6">
+                            <div class="flex space-x-4">
+                                <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+                                <a href="#"
+                                    class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">Úvod</a>
+                                <a href="#"
+                                    class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Hvězdné
+                                    mapy</a>
+                                <a href="#"
+                                    class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Města</a>
+                                <a href="#"
+                                    class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Znamení
+                                    zvěrokruhu</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                        <button
+                            class="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                            <span class="sr-only">Jazyky</span>
+                            <!-- Heroicon name: bell -->
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z">
+                                </path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!--
+                     Mobile menu, toggle classes based on menu state.
+  
+                 Menu open: "block", Menu closed: "hidden"
+                -->
+            <div id="mainMenu" class="hidden sm:hidden">
+                <div class="px-2 pt-2 pb-3 space-y-1">
+                    <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+                    <a href="#" class="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium">Úvod</a>
+                    <a href="#"
+                        class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Hvězdné
+                        mapy</a>
+                    <a href="#"
+                        class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Města</a>
+                    <a href="#"
+                        class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Znamení
+                        zvěrokruhu</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <style>
+        #preview-wrapper {
+            height: calc(100vh - 4rem);
+        }
+    </style>
+
+    <!-- MAIN -->
+    <main>
+        <div id="app">
+            <div id="editor-wrapper" class="grid grid-cols-3">
+                <div id="preview-wrapper" class="flex col-span-3 sm:col-span-2 justify-center items-center bg-gray-50 w-full">
+                    
+                    
+                    <div id="preview" class="poster-font-family break-words">
+                        <!-- Start of the preview svg supposed for other stuff -->
+
+                            <div id="poster-container">
+                                <div id="map-container"></div>
+                                <svg id="svg-poster-mask">
+
+                                </svg>
+
+                                <div id="poster-content">
+
+
+                                    <div id="texts-container" class="text-center flex-col justify-center"></div>
+
+                                </div>
+
+
+                            </div>
+
+                        <!-- <img class="transform scale-75 translate-y-0.5 translate-x-0.5" src="/public/img/50x70_230_prev.png" alt="prev"> -->
+
+                    </div>
+                    
+                    <!-- <div id="preview" class="border-box relative max-h-full">
+                        <img class="transform scale-75 translate-y-0.5" src="/public/img/50x70_230_prev.png" alt="prev">
+           
+                    </div> -->
+                        
+                    <!-- <div id="preview" class=" relative sm:-top-20 overflow-visible max-h-full">
+                        <img class="transform scale-75 translate-y-0.5 w-full h-auto" src="/public/img/50x70_230_prev.png" alt="prev">
+           
+                    </div> -->
+                           
+                           
+             
+
+                   
+                </div>
+                <!-- RIGHT BAR -->
+                <div id="sidebar-wrapper" class="relative col-span-3 sm:col-span-1 flex flex-col h-auto bg-gray-100">
+                    <div id="sidebar-info" class="p-4 text-center">
+                        <h1 class="text-3xl">Vytvoř svou hvězdnou mapu</h1>
+                        <p class="text-1.5xl">V jednoduchém editoru...</p>
+                    </div>
+    
+                    <!-- accordion -->
+                    <ul id="param-holder" class="block w-11/12 my-4 mx-auto" x-data="{selected:0}">
+                        <li class="flex align-center flex-col">
+                            <h4 @click="selected !== 0 ? selected = 0 : selected = null"
+                                class="cursor-pointer px-5 py-3 bg-indigo-300 text-white text-center inline-block hover:opacity-75 hover:shadow hover:-mb-3 rounded-t">Místo a datum </h4>
+                            <div x-show="selected == 0" class="border py-4 px-2">
+                                Vyplňte místo a datum životního okamžiku
+                            
+                            <div class="relative flex w-full flex-wrap items-stretch p-2">
+                                <span class="z-10 text-gray-400 absolute bg-transparent rounded p-1">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                        </path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                </span>
+                                <input id="map-location-input" type="text" placeholder="zadejte lokaci okamžiku"
+                                    class="px-2 py-1 placeholder-gray-400 text-gray-700 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full pl-8" />
+                            </div>
+                            <div class="relative flex w-full flex-wrap items-stretch p-2">
+                                <span class="z-10 text-gray-400 absolute bg-transparent rounded p-1">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                </span>
+                                <input id="map-datetime-input" type="datetime-local" placeholder="vyberte datum"
+                                    class="px-2 py-1 placeholder-gray-400 text-gray-700 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full pl-8" />
+                            </div>
+                            </div>
+                        </li>
+                        <li class="flex align-center flex-col">
+                            <h4 @click="selected !== 1 ? selected = 1 : selected = null"
+                                class="cursor-pointer px-5 py-3 bg-indigo-400 text-white text-center inline-block hover:opacity-75 hover:shadow hover:-mb-3">Varianta a rozměr </h4>
+                            <div x-show="selected == 1" class="border py-4 px-2">
+                                 Zvolte variantu designu a barevnou kombinaci
+                                 
+                                    <div class="flex flex-wrap">
+                                        <button class="text-xs border-2 border-gray-300 rounded-full w-16 h-16 hover:border-red-300 focus:outline-none" data-poster-theme="classic_black_nobg">CLASSIC - Black and White</button>
+                                        <button class="text-xs border-2 border-gray-300 rounded-full w-16 h-16 hover:border-red-300 focus:outline-none" data-poster-theme="classic_blue_nobg">CLASSIC - Blue and White</button>
+                                        <button class="text-xs border-2 border-gray-300 rounded-full w-16 h-16 hover:border-red-300 focus:outline-none" data-poster-theme="classic_black">CLASSIC - Black</button>
+                                        <button class="text-xs border-2 border-gray-300 rounded-full w-16 h-16 hover:border-red-300 focus:outline-none" data-poster-theme="classic_blue">CLASSIC - Blue</button>
+                                      </div>
+                                      
+                                      <div class="flex flex-wrap">
+                                        <button class="text-xs border-2 border-gray-300 rounded-full w-16 h-16 hover:border-red-300 focus:outline-none" data-poster-theme="heart_black_nobg">HEART - Black and White</button>
+                                        <button class="text-xs border-2 border-gray-300 rounded-full w-16 h-16 hover:border-red-300 focus:outline-none" data-poster-theme="heart_blue_nobg">HEART - Blue and White</button>
+                                        <button class="text-xs border-2 border-gray-300 rounded-full w-16 h-16 hover:border-red-300 focus:outline-none" data-poster-theme="heart_black">HEART - Black</button>
+                                        <button class="text-xs border-2 border-gray-300 rounded-full w-16 h-16 hover:border-red-300 focus:outline-none" data-poster-theme="heart_blue">HEART - Blue</button>
+
+
+                                      </div>
+                                      
+                                      <div class="flex flex-wrap">
+                                        <button class="text-xs border-2 border-gray-300 rounded-full w-16 h-16 hover:border-red-300 focus:outline-none" data-poster-theme="special_black">SPECIAL - Black</button>
+                                        <button class="text-xs border-2 border-gray-300 rounded-full w-16 h-16 hover:border-red-300 focus:outline-none" data-poster-theme="special_blue">SPECIAL - Blue</button>
+                                      </div>
+
+                                Zvolte rozměr
+                                <div class="flex flex-wrap">
+                                    <button class="border-2 border-gray-300 rounded-full w-16 h-16 hover:border-red-300 focus:outline-none" data-preview-size="30x40">30x40</button>
+                                    <button class="border-2 border-gray-300 ml-1 rounded-full w-16 h-16 hover:border-red-300 focus:outline-none" data-preview-size="40x50">40x50</button>
+                                    <button class="border-2 border-gray-300 ml-1 rounded-full w-16 h-16 hover:border-red-300 focus:outline-none" data-preview-size="50x70">50x70</button>
+
+                                  </div>
+                            </div>
+                        </li>
+                        <li class="flex align-center flex-col">
+                            <h4 @click="selected !== 2 ? selected = 2 : selected = null"
+                                :class="{'cursor-pointer px-5 py-3 bg-indigo-500 text-white text-center inline-block hover:opacity-75 hover:shadow hover:-mb-3': true, 'rounded-b': selected != 2}">Úpravy textu</h4>
+                            <div x-show="selected == 2" :class="{'border py-4 px-2': true, 'rounded-b': selected == 2}">
+                                <div class="relative flex w-full flex-wrap items-stretch p-2">
+                                    Upravte Váš osobní vzkaz
+                                    <textarea id="param-text-note" type="text" placeholder="zadejte osobní vzkaz" class="h-20 px-2 py-1 mb-2 placeholder-gray-400 text-gray-700 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full pl-2 resize-none" ></textarea>
+                                    Upravte podrobnosti
+                                    <textarea id="param-text-misc" type="text" placeholder="zadejte podrobnosti" class="h-20 px-2 py-1 mb-2 placeholder-gray-400 text-gray-700 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full pl-2 resize-none" ></textarea>
+                                    <!-- <input id="param-text-date" type="text" placeholder="úprava datumu" class="px-2 py-1 mb-2 placeholder-gray-400 text-gray-700 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full pl-2" />
+                                    <input id="param-text-place" type="text" placeholder="úprava lokace" class="px-2 py-1 mb-2 placeholder-gray-400 text-gray-700 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full pl-2" />
+                                    <input id="param-text-coord" type="text" placeholder="úprava souřadnic" class="px-2 py-1 mb-2 placeholder-gray-400 text-gray-700 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full pl-2" /> -->
+                                </div>    
+                            </div>
+                        </li>
+                
+                    </ul>
+                    <div id="addtocart" class="absolute inset-x-0 bottom-0 h-16 bg-gray-900">
+                        <button class="flex flex-shrink items-center justify-between w-full h-full px-4 hover:bg-black">
+                            <div class="flex-none text-xl text-white">699 Kč</div>
+                            <div class="text-xl text-white">PŘIDAT DO KOŠÍKU</div>
+                            <svg class="text-white w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z">
+                                </path>
+                            </svg>
+
+                        </button>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <footer class="bg-gray-800 sm: pt-10">
+        <div class="max-w-6xl m-auto text-gray-800 flex flex-wrap justify-left">
+            <!-- Col-1 -->
+            <div class="p-5 w-1/2 sm:w-4/12 md:w-3/12">
+                <!-- Col Title -->
+                <div class="text-xs uppercase text-gray-400 font-medium mb-6">
+                    Gala Produkty
+                </div>
+
+                <!-- Links -->
+                <a href="#" class="my-3 block text-gray-300 hover:text-gray-100 text-sm font-medium duration-700">
+                    Gala Hvězdy
+                </a>
+                <a href="#" class="my-3 block text-gray-300 hover:text-gray-100 text-sm font-medium duration-700">
+                    Gala města
+                </a>
+                <a href="#" class="my-3 block text-gray-300 hover:text-gray-100 text-sm font-medium duration-700">
+                    Gala zvěrokruh
+                </a>
+            </div>
+
+            <!-- Col-2 -->
+            <div class="p-5 w-1/2 sm:w-4/12 md:w-3/12">
+                <!-- Col Title -->
+                <div class="text-xs uppercase text-gray-400 font-medium mb-6">
+                    Informace pro vás
+                </div>
+
+                <!-- Links -->
+                <a href="#" class="my-3 block text-gray-300 hover:text-gray-100 text-sm font-medium duration-700">
+                    Hodnocení obchodu
+                </a>
+                <a href="#" class="my-3 block text-gray-300 hover:text-gray-100 text-sm font-medium duration-700">
+                    FAQ
+                </a>
+                <a href="#" class="my-3 block text-gray-300 hover:text-gray-100 text-sm font-medium duration-700">
+                    Doprava a platba
+                </a>
+                <a href="#" class="my-3 block text-gray-300 hover:text-gray-100 text-sm font-medium duration-700">
+                    Obchodní podmínky
+                </a>
+                <a href="#" class="my-3 block text-gray-300 hover:text-gray-100 text-sm font-medium duration-700">
+                    GDPR
+                </a>
+                <a href="#" class="my-3 block text-gray-300 hover:text-gray-100 text-sm font-medium duration-700">
+                    Kontakt
+                </a>
+                <a href="#" class="my-3 block text-gray-300 hover:text-gray-100 text-sm font-medium duration-700">
+                    Bog
+                </a>
+            </div>
+
+            <!-- Col-3 -->
+            <div class="p-5 w-1/2 sm:w-4/12 md:w-3/12">
+                <!-- Col Title -->
+                <div class="text-xs uppercase text-gray-400 font-medium mb-6">
+                    Customization
+                </div>
+
+                <!-- Links -->
+                <a href="#" class="my-3 block text-gray-300 hover:text-gray-100 text-sm font-medium duration-700">
+                    Configuration
+                </a>
+                <a href="#" class="my-3 block text-gray-300 hover:text-gray-100 text-sm font-medium duration-700">
+                    Theme Configuration
+                </a>
+                <a href="#" class="my-3 block text-gray-300 hover:text-gray-100 text-sm font-medium duration-700">
+                    Breakpoints
+                </a>
+            </div>
+
+            <!-- Col-3 -->
+            <div class="p-5 w-1/2 sm:w-4/12 md:w-3/12">
+                <!-- Col Title -->
+                <div class="text-xs uppercase text-gray-400 font-medium mb-6">
+                    Kontakt
+                </div>
+
+                <!-- Links -->
+                <a href="#" class="my-3 block text-gray-300 hover:text-gray-100 text-sm font-medium duration-700">
+                    604 122 220
+                </a>
+                <a href="#" class="my-3 block text-gray-300 hover:text-gray-100 text-sm font-medium duration-700">
+                    info@galamaps.cz
+                </a>
+                <a href="#" class="my-3 block text-gray-300 hover:text-gray-100 text-sm font-medium duration-700">
+                    Facebook
+                </a>
+                <a href="#" class="my-3 block text-gray-300 hover:text-gray-100 text-sm font-medium duration-700">
+                    Instagram
+                </a>
+            </div>
+        </div>
+        <!-- Copyright Bar -->
+        <div class="pt-2">
+            <div class="flex pb-5 px-3 m-auto pt-5 
+            border-t border-gray-500 text-gray-400 text-sm 
+            flex-col md:flex-row max-w-6xl">
+                <div class="mt-2">
+                    <div class="h-16 flex items-center justify-center bg-gray-800">
+                        <p>
+                            <span class="text-white">Copyright &copy; 2021 | Gala Maps</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Required Unicons (if you want) -->
+                <div class="md:flex-auto md:flex-row-reverse mt-2 flex-row flex">
+                    <a href="#" class="w-6 mx-1">
+                        <i class="uil uil-facebook-f"></i>
+                    </a>
+                    <a href="#" class="w-6 mx-1">
+                        <i class="uil uil-youtube"></i>
+                    </a>
+                    <a href="#" class="w-6 mx-1">
+                        <i class="uil uil-instagram"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <div id="rndr-hlpr" style="display: none;"></div>
+</body>
+
+</html>

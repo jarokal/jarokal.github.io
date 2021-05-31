@@ -1,0 +1,7 @@
+Current states:
+
+	Not started, in progress, testing, done, blocked
+
+	Testing = new column in sheet with testing states: 0 - not in test, 1 - test SVN, 2 - test server .....
+
+Card view - By stage = Default scrum table , By Testing = testing states table

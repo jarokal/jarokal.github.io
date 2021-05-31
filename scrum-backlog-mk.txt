@@ -1,0 +1,5 @@
+ESPapp - Screening implementation
+ESPapp - Finishing of schema preview
+ESPapp - Testing functionalities and the app so it dont crash
+Implementace babelu a TS do SSA - Honza je již domluveny 
+žáden research specifický pro SSA, research Reactu proč by bylo dobré vyvíjet nové věci na něm
